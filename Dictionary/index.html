@@ -11,28 +11,33 @@
     }
     body{
     overflow-x: hidden;
-
+  overflow-y: scroll
     }
    .lineder{
     width: 100vw;
     height: 3px;
     background-color: rgb(9,9,9)
     }
+  .strong{
+    font-weight: bold;
+  }
 </style>
 
 <link rel="stylesheet" type="text/css" href="normalize.css">
 </head>
 <body>
-
+<section style="position: fixed;bottom: 0; z-index: 999; font-size: 14px;font-family: Helvetica,Arial,sans-serif  ">
+  <span>You open this page in</span>　<time class="need_to_be_rendered load_time strong"></time>
+</section>
 <div id="app">
-  <div class="lineder"></div>
   <div id="wrap">
     <div class="search_wrap">
        <div class="search">
 
         <input type="text" name="" v-model="keyword"  @keyup="search" @keyup.38='up' @keyup.40='down' @keyup.13="sendSearch" placeholder="请输入单词">
        </div> 
-      <button>翻译</button>
+      <button @click="sendSearch">翻译</button>
+      
     </div>
      
 
@@ -43,13 +48,14 @@
           </ul>
         </div>
       </div>
-  
+      
   </div> 
   <div id="content" >
       <div class="header">
         <img src="http://dictionary.cambridge.org/zhs/external/images/logo-lrg.png?version=2017-02-02-0821">
         <span class="current">Current</span>
         <span>{{this.keyword}}</span>
+        
       </div>
      
         <ol class="word-content">
@@ -87,6 +93,15 @@
         </ol>
        
     
+  </div>
+  <div class="history">
+    <span class="city">HISTORY</span>
+    <div class="history_content">
+      <ul class="histor_list">
+        <li v-for="wd in histories"><span>{{wd}}</span></li>
+       
+      </ul>
+    </div>
   </div>
 </div>
 <!--  wrap-搜索框     -->
@@ -165,17 +180,42 @@
 
   #content{
 
-  width: calc(100% - 355px);
+  width: calc(100% - 455px);
   margin-left: 355px; 
   background-color: #fafbf8;
   position: absolute;
 
   }
+.history{
+  width: 100px;
+  position: absolute;
+  right: 0;
+  height: 100%;
+  background-color: #ddd;
+}
+
+.histor_list {
+  margin-top: 50px
+}
+.histor_list > li{
+  list-style: none;
+
+  padding-top: 10px
+  margin:0;
+  font-size: 14px;
+  color: rgb(9,9,9);
+  letter-spacing: 3px;
+  padding:5px;
+}
   .header{
   height: 46px;
   border-bottom: 1px dotted;
   background-color: rgba(9,9,9,0.5);
-  position: relative;
+  position: fixed;
+  z-index: 555;
+  top: 0;
+  width: 100%;
+
   }
   .header > .current{
     color:#ff6700;
@@ -186,8 +226,16 @@
       margin-top:6px;
       left:5px;
   }
+   .time{
+      float: right;
+      margin-top:10px;
+      margin-right: 10px;
+      font-size: 14px;
+      font-family: '幼圆'，'yahei',sans-serif;
+    }
   .word-content{
-    padding: 20px
+    padding: 20px;
+    margin-top: 50px
   }
   .describe{
     width: 600px;
@@ -201,6 +249,7 @@
   .title{
 
   }
+
   .country{
     color: red
   }
@@ -226,6 +275,7 @@
   }
   .word-list{
     margin-left: 10px
+    letter-spacing:2px;
   }
  .read{
   cursor: pointer;
@@ -236,8 +286,14 @@ font-size: 12px;
  }
   </style>
 
+<script type="text/javascript" src='timeago.min.js'></script>
+<script src="index.js"></script>
+<script>
+  
+ var timeagoInstance = new timeago();
+    timeagoInstance.render(document.querySelectorAll('.need_to_be_rendered'), 'zh_CN');
 
-</body>
+</script>
 
 <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
 <script src="vue.js"></script>
@@ -250,6 +306,7 @@ new Vue({
     keyword:'',
     count:0,
     wordcontent:'',
+    histories:[]
   },
   watch:{
     
@@ -289,13 +346,19 @@ new Vue({
         if (index) {}
       },
       sendSearch(){
-
+        console.log( this.histories)
         if (this.keyword) {
         $.getJSON(`http://damiao.io:5000/word/${this.keyword}`, (data) => {
 
             this.wordcontent = data
           }
         )
+        var historieswrap=this.histories
+        if (historieswrap.indexOf(this.keyword) < 0) {
+           historieswrap.push(this.keyword)
+        }
+       
+        
       } 
     },
     played(event){
@@ -310,4 +373,8 @@ new Vue({
 
 
 </script>
+
+</body>
+
+
 </html>
