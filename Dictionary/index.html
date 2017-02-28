@@ -98,7 +98,7 @@
     <span class="city">HISTORY</span>
     <div class="history_content">
       <ul class="histor_list">
-        <li v-for="wd in histories"><span>{{wd}}</span></li>
+        <li v-for="wd in histories"><span  @click="sendSearch2(wd)">{{wd}}</span></li>
        
       </ul>
     </div>
@@ -190,17 +190,21 @@
   width: 100px;
   position: absolute;
   right: 0;
-  height: 100%;
-  background-color: #ddd;
+  background-color: #ccc;
+  height: 100vh
 }
 
 .histor_list {
   margin-top: 50px
 }
+.histor_list > li >span:hover{
+  color: #ff6700
+}
 .histor_list > li{
   list-style: none;
-
-  padding-top: 10px
+  cursor: pointer;
+  padding-top: 10px;
+  background-color: #ddd;
   margin:0;
   font-size: 14px;
   color: rgb(9,9,9);
@@ -360,6 +364,14 @@ new Vue({
        
         
       } 
+    },
+    sendSearch2(wd){
+      console.log(wd)
+    $.getJSON(`http://damiao.io:5000/word/${wd}`, (data) => {
+
+            this.wordcontent = data
+          }
+        )
     },
     played(event){
       var a= event.target.innerHTML
